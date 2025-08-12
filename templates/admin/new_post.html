@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}创建新文章 - 优雅博客{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <h1 class="admin-title">创建新文章</h1>
+        <p class="admin-subtitle">撰写您的新文章</p>
+    </div>
+    
+    <div class="post-form-container">
+        <form method="POST" class="post-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="title" class="form-label">文章标题 *</label>
+                    <input type="text" id="title" name="title" class="form-input" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="category_id" class="form-label">分类 *</label>
+                    <select id="category_id" name="category_id" class="form-select" required>
+                        <option value="">选择分类</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="excerpt" class="form-label">文章摘要</label>
+                    <textarea id="excerpt" name="excerpt" class="form-textarea" rows="3" placeholder="输入文章摘要（可选）"></textarea>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="content" class="form-label">文章内容 *</label>
+                    <textarea id="content" name="content" class="form-textarea" rows="15" required placeholder="输入文章内容..."></textarea>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-checkbox-label">
+                        <input type="checkbox" name="is_published" class="form-checkbox">
+                        <span class="checkmark"></span>
+                        立即发布
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">创建文章</button>
+                <a href="{{ url_for('admin_posts') }}" class="btn btn-secondary">取消</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.post-form-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.post-form {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+}
+
+.form-row {
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    width: 100%;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.form-input, .form-select, .form-textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.form-checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.form-checkbox {
+    margin-right: 0.5rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+@media (max-width: 768px) {
+    .post-form {
+        padding: 1.5rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}

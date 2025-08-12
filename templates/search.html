@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}搜索结果 - 优雅博客{% endblock %}
+
+{% block content %}
+<div class="search-results-container">
+    <div class="container">
+        <div class="search-header">
+            <h1 class="search-title">搜索结果</h1>
+            {% if query %}
+            <p class="search-query">搜索关键词: "{{ query }}"</p>
+            <p class="search-count">找到 {{ posts|length }} 篇文章</p>
+            {% endif %}
+        </div>
+        
+        {% if query %}
+            {% if posts %}
+            <div class="search-results">
+                {% for post in posts %}
+                <article class="search-result-item">
+                    {% if post.featured_image %}
+                    <div class="result-image">
+                        <a href="{{ url_for('post', slug=post.slug) }}">
+                            <img src="{{ url_for('static', filename='uploads/' + post.featured_image) }}" alt="{{ post.title }}">
+                        </a>
+                    </div>
+                    {% endif %}
+                    <div class="result-content">
+                        <div class="result-meta">
+                            <span class="result-category">{{ post.category.name }}</span>
+                            <span class="result-date">{{ post.created_at.strftime('%Y年%m月%d日') }}</span>
+                        </div>
+                        <h2 class="result-title">
+                            <a href="{{ url_for('post', slug=post.slug) }}">{{ post.title }}</a>
+                        </h2>
+                        {% if post.excerpt %}
+                        <p class="result-excerpt">{{ post.excerpt }}</p>
+                        {% else %}
+                        <p class="result-excerpt">{{ post.content[:200] }}...</p>
+                        {% endif %}
+                        <div class="result-footer">
+                            <span class="result-author">作者：{{ post.author.username }}</span>
+                            <span class="result-views">{{ post.view_count }} 次阅读</span>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-results">
+                <div class="no-results-icon">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </div>
+                <h2>未找到相关结果</h2>
+                <p>抱歉，没有找到与 "{{ query }}" 相关的文章。</p>
+                <div class="no-results-suggestions">
+                    <h3>搜索建议：</h3>
+                    <ul>
+                        <li>检查拼写是否正确</li>
+                        <li>尝试使用更简单的关键词</li>
+                        <li>使用同义词或相关词汇</li>
+                        <li>减少关键词数量</li>
+                    </ul>
+                </div>
+                <div class="no-results-actions">
+                    <a href="{{ url_for('index') }}" class="btn btn-primary">返回首页</a>
+                    <a href="{{ url_for('search') }}" class="btn btn-secondary">重新搜索</a>
+                </div>
+            </div>
+            {% endif %}
+        {% else %}
+        <div class="search-form-container">
+            <div class="search-form-content">
+                <h2>开始搜索</h2>
+                <p>输入关键词搜索您感兴趣的文章</p>
+                <form action="{{ url_for('search') }}" method="GET" class="search-form-large">
+                    <div class="search-input-group-large">
+                        <input type="text" name="q" placeholder="输入关键词搜索..." class="search-input-large" required>
+                        <button type="submit" class="search-btn-large">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            搜索
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- 热门搜索 -->
+        <div class="popular-searches">
+            <h3>热门搜索</h3>
+            <div class="search-tags">
+                <a href="{{ url_for('search', q='技术') }}" class="search-tag">技术</a>
+                <a href="{{ url_for('search', q='生活') }}" class="search-tag">生活</a>
+                <a href="{{ url_for('search', q='思考') }}" class="search-tag">思考</a>
+                <a href="{{ url_for('search', q='阅读') }}" class="search-tag">阅读</a>
+                <a href="{{ url_for('search', q='写作') }}" class="search-tag">写作</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

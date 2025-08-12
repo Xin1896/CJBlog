@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category.name }} - 优雅博客{% endblock %}
+
+{% block content %}
+<div class="category-container">
+    <div class="container">
+        <div class="category-header">
+            <h1 class="category-title">{{ category.name }}</h1>
+            {% if category.description %}
+            <p class="category-description">{{ category.description }}</p>
+            {% endif %}
+            <p class="category-count">共 {{ posts.items|length }} 篇文章</p>
+        </div>
+        
+        {% if posts.items %}
+        <div class="category-posts">
+            <div class="posts-grid">
+                {% for post in posts.items %}
+                <article class="post-card">
+                    {% if post.featured_image %}
+                    <div class="post-image">
+                        <a href="{{ url_for('post', slug=post.slug) }}">
+                            <img src="{{ url_for('static', filename='uploads/' + post.featured_image) }}" alt="{{ post.title }}">
+                        </a>
+                    </div>
+                    {% endif %}
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span class="post-category">{{ post.category.name }}</span>
+                            <span class="post-date">{{ post.created_at.strftime('%Y年%m月%d日') }}</span>
+                        </div>
+                        <h3 class="post-title">
+                            <a href="{{ url_for('post', slug=post.slug) }}">{{ post.title }}</a>
+                        </h3>
+                        {% if post.excerpt %}
+                        <p class="post-excerpt">{{ post.excerpt }}</p>
+                        {% endif %}
+                        <div class="post-footer">
+                            <span class="post-author">作者：{{ post.author.username }}</span>
+                            <a href="{{ url_for('post', slug=post.slug) }}" class="read-more">阅读更多</a>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+            
+            <!-- 分页 -->
+            {% if posts.pages > 1 %}
+            <div class="pagination">
+                {% if posts.has_prev %}
+                <a href="{{ url_for('category', slug=category.slug, page=posts.prev_num) }}" class="page-link">&laquo; 上一页</a>
+                {% endif %}
+                
+                {% for page_num in posts.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num != posts.page %}
+                        <a href="{{ url_for('category', slug=category.slug, page=page_num) }}" class="page-link">{{ page_num }}</a>
+                        {% else %}
+                        <span class="page-current">{{ page_num }}</span>
+                        {% endif %}
+                    {% else %}
+                    <span class="page-ellipsis">...</span>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if posts.has_next %}
+                <a href="{{ url_for('category', slug=category.slug, page=posts.next_num) }}" class="page-link">下一页 &raquo;</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="no-posts">
+            <div class="no-posts-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14,2 14,8 20,8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10,9 9,9 8,9"></polyline>
+                </svg>
+            </div>
+            <h2>暂无文章</h2>
+            <p>该分类下暂时没有文章。</p>
+            <div class="no-posts-actions">
+                <a href="{{ url_for('index') }}" class="btn btn-primary">浏览其他文章</a>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- 其他分类 -->
+        <div class="other-categories">
+            <h3>其他分类</h3>
+            <div class="categories-list">
+                <a href="{{ url_for('index') }}" class="category-link">所有文章</a>
+                <!-- 这里可以添加其他分类链接 -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

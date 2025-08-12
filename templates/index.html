@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}优雅博客 - 分享思想与见解{% endblock %}
+{% block description %}一个优雅的博客平台，分享思想与见解，记录生活点滴{% endblock %}
+
+{% block content %}
+<!-- 英雄区域 -->
+<section class="hero">
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1 class="hero-title">分享思想，传播智慧</h1>
+            <p class="hero-subtitle">在这里，我们记录生活，分享见解，探索世界的无限可能</p>
+            <div class="hero-actions">
+                <a href="#featured-posts" class="btn btn-primary">探索文章</a>
+                <a href="{{ url_for('about') }}" class="btn btn-secondary">了解更多</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 特色文章 -->
+<section id="featured-posts" class="featured-posts">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">特色文章</h2>
+            <p class="section-subtitle">精选内容，值得一读</p>
+        </div>
+        
+        <div class="featured-grid">
+            {% for post in featured_posts %}
+            <article class="featured-card">
+                {% if post.featured_image %}
+                <div class="featured-image">
+                    <img src="{{ url_for('static', filename='uploads/' + post.featured_image) }}" alt="{{ post.title }}">
+                </div>
+                {% endif %}
+                <div class="featured-content">
+                    <div class="post-meta">
+                        <span class="post-category">{{ post.category.name }}</span>
+                        <span class="post-date">{{ post.created_at.strftime('%Y年%m月%d日') }}</span>
+                    </div>
+                    <h3 class="featured-title">
+                        <a href="{{ url_for('post', slug=post.slug) }}">{{ post.title }}</a>
+                    </h3>
+                    {% if post.excerpt %}
+                    <p class="featured-excerpt">{{ post.excerpt }}</p>
+                    {% endif %}
+                    <div class="featured-footer">
+                        <span class="post-author">作者：{{ post.author.username }}</span>
+                        <span class="post-views">{{ post.view_count }} 次阅读</span>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- 最新文章 -->
+<section class="latest-posts">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">最新文章</h2>
+            <p class="section-subtitle">发现最新发布的内容</p>
+        </div>
+        
+        <div class="posts-grid">
+            {% for post in posts.items %}
+            <article class="post-card">
+                {% if post.featured_image %}
+                <div class="post-image">
+                    <a href="{{ url_for('post', slug=post.slug) }}">
+                        <img src="{{ url_for('static', filename='uploads/' + post.featured_image) }}" alt="{{ post.title }}">
+                    </a>
+                </div>
+                {% endif %}
+                <div class="post-content">
+                    <div class="post-meta">
+                        <span class="post-category">{{ post.category.name }}</span>
+                        <span class="post-date">{{ post.created_at.strftime('%Y年%m月%d日') }}</span>
+                    </div>
+                    <h3 class="post-title">
+                        <a href="{{ url_for('post', slug=post.slug) }}">{{ post.title }}</a>
+                    </h3>
+                    {% if post.excerpt %}
+                    <p class="post-excerpt">{{ post.excerpt }}</p>
+                    {% endif %}
+                    <div class="post-footer">
+                        <span class="post-author">作者：{{ post.author.username }}</span>
+                        <a href="{{ url_for('post', slug=post.slug) }}" class="read-more">阅读更多</a>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        
+        <!-- 分页 -->
+        {% if posts.pages > 1 %}
+        <div class="pagination">
+            {% if posts.has_prev %}
+            <a href="{{ url_for('index', page=posts.prev_num) }}" class="page-link">&laquo; 上一页</a>
+            {% endif %}
+            
+            {% for page_num in posts.iter_pages() %}
+                {% if page_num %}
+                    {% if page_num != posts.page %}
+                    <a href="{{ url_for('index', page=page_num) }}" class="page-link">{{ page_num }}</a>
+                    {% else %}
+                    <span class="page-current">{{ page_num }}</span>
+                    {% endif %}
+                {% else %}
+                <span class="page-ellipsis">...</span>
+                {% endif %}
+            {% endfor %}
+            
+            {% if posts.has_next %}
+            <a href="{{ url_for('index', page=posts.next_num) }}" class="page-link">下一页 &raquo;</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- 分类导航 -->
+<section class="categories">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">文章分类</h2>
+            <p class="section-subtitle">按主题浏览文章</p>
+        </div>
+        
+        <div class="categories-grid">
+            {% for category in categories %}
+            <div class="category-card">
+                <h3 class="category-name">{{ category.name }}</h3>
+                {% if category.description %}
+                <p class="category-description">{{ category.description }}</p>
+                {% endif %}
+                <a href="{{ url_for('category', slug=category.slug) }}" class="category-link">浏览文章</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- 搜索区域 -->
+<section class="search-section">
+    <div class="container">
+        <div class="search-content">
+            <h2 class="search-title">寻找特定内容？</h2>
+            <p class="search-subtitle">使用搜索功能快速找到您感兴趣的文章</p>
+            <form action="{{ url_for('search') }}" method="GET" class="search-form">
+                <div class="search-input-group">
+                    <input type="text" name="q" placeholder="输入关键词搜索..." class="search-input" required>
+                    <button type="submit" class="search-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

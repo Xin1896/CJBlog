@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}文章管理 - 优雅博客{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <h1 class="admin-title">文章管理</h1>
+        <p class="admin-subtitle">管理您的所有文章</p>
+    </div>
+    
+    <div class="admin-actions">
+        <a href="{{ url_for('new_post') }}" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            创建新文章
+        </a>
+    </div>
+    
+    <div class="posts-table-container">
+        <table class="posts-table">
+            <thead>
+                <tr>
+                    <th>标题</th>
+                    <th>分类</th>
+                    <th>作者</th>
+                    <th>状态</th>
+                    <th>创建时间</th>
+                    <th>阅读量</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in posts %}
+                <tr>
+                    <td class="post-title-cell">
+                        <a href="{{ url_for('post', slug=post.slug) }}" target="_blank">{{ post.title }}</a>
+                    </td>
+                    <td>{{ post.category.name }}</td>
+                    <td>{{ post.author.username }}</td>
+                    <td>
+                        <span class="status-badge status-{{ 'published' if post.is_published else 'draft' }}">
+                            {{ '已发布' if post.is_published else '草稿' }}
+                        </span>
+                    </td>
+                    <td>{{ post.created_at.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ post.view_count }}</td>
+                    <td class="actions-cell">
+                        <a href="{{ url_for('edit_post', id=post.id) }}" class="btn btn-small btn-secondary">编辑</a>
+                        <form method="POST" action="{{ url_for('delete_post', id=post.id) }}" class="delete-form" onsubmit="return confirm('确定要删除这篇文章吗？')">
+                            <button type="submit" class="btn btn-small btn-danger">删除</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    {% if not posts %}
+    <div class="no-posts">
+        <p>暂无文章</p>
+        <a href="{{ url_for('new_post') }}" class="btn btn-primary">创建第一篇文章</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
